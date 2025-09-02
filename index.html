@@ -1,107 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gowtham SB | Data Engineer</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSV Data Visualizer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fefefe;
-      color: #333;
-      line-height: 1.6;
-    }
-    header {
-      background-color: #ffd400;
-      padding: 40px 20px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2.5em;
-    }
-    header p {
-      margin: 10px 0 0;
-      font-size: 1.2em;
-    }
-    section {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    h2 {
-      border-bottom: 2px solid #ffd400;
-      padding-bottom: 5px;
-    }
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    li {
-      background: #fafafa;
-      margin: 10px 0;
-      padding: 15px;
-      border-left: 5px solid #ffd400;
-    }
-    footer {
-      text-align: center;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      font-size: 0.9em;
-      background: #f4f4f4;
-      margin-top: 40px;
+      text-align: center;
     }
-    a {
-      color: #007acc;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
+    canvas {
+      max-width: 100%;
+      height: auto;
     }
   </style>
 </head>
 <body>
+  <h1>📈 CSV Data Visualizer</h1>                                            
+  <input type="file" id="csvFile" accept=".csv" />
+  <br><br>
+  <canvas id="chart"></canvas>
 
-  <header>
-    <h1>Gowtham SB</h1>
-    <p>Data Engineer | YouTuber | Educator</p>
-  </header>
+  <script>
+    document.getElementById('csvFile').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
 
-  <section>
-    <h2>About Me</h2>
-    <p>I am a Data Engineer with over 11 years of experience in Big Data, Spark, AWS, and GCP. I also run a Tamil YouTube channel where I teach Data Engineering in a beginner-friendly way.</p>
-  </section>
+      Papa.parse(file, {
+        header: true,
+        dynamicTyping: true,
+        complete: function(results) {
+          const data = results.data;
+          const labels = data.map(row => row["Product"]);
+          const values = data.map(row => row["Sales"]);
 
-  <section>
-    <h2>Projects</h2>
-    <ul>
-      <li>
-        <strong>Zomato Analytics:</strong> Built a real-time food order analysis pipeline using MySQL, Python & Google Cloud. <br>
-        <a href="#">View on GitHub</a>
-      </li>
-      <li>
-        <strong>TalkToDB:</strong> AI-powered SQL assistant that translates English into MySQL queries. <br>
-        <a href="#">View on GitHub</a>
-      </li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Skills</h2>
-    <p>Python, Spark, SQL, AWS, GCP, BigQuery, Airflow, MySQL, Git</p>
-  </section>
-
-  <section>
-    <h2>Contact</h2>
-    <p>Email: gowtham@example.com</p>
-    <p>YouTube: <a href="https://www.youtube.com/@dataengineeringvideos">Data Engineering Channel</a></p>
-  </section>
-
-  <footer>
-    &copy; 2025 Gowtham SB — All rights reserved.
-  </footer>
-
+          const ctx = document.getElementById('chart').getContext('2d');
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Sales by Product',
+                data: values,
+                backgroundColor: 'rgba(255, 205, 86, 0.8)',
+                borderColor: '#333',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
